@@ -7,58 +7,53 @@ from nltk.tokenize import word_tokenize
 from symspellpy.symspellpy import SymSpell, Verbosity
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import StratifiedKFold, cross_validate
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from joblib import dump  # Import per salvare il modello
-from src.preprocessor import CustomTweetPreprocessor  # Importa il preprocessor
+from src.preprocessor import CustomTweetPreprocessor
 from sklearn.metrics import confusion_matrix
 
 # Creazione della Pipeline
 pipeline = Pipeline([
     ("preproc", CustomTweetPreprocessor()),
-    ("tfidf", TfidfVectorizer(min_df=5, max_df=0.9)),
+    ("bow", CountVectorizer(min_df=5, max_df=0.9)),
     ("clf", MultinomialNB())
 ])
-
-
 
 # Caricamento del dataset
 dataset = pd.read_csv("../../data/sentiment140_reduced_clean.csv")  # Aggiorna il path al file
 dataset = dataset.dropna(subset=['text'])
 dataset = dataset[dataset['text'].str.strip() != '']
+
 X = dataset['text']
 y = dataset['target']
 
 # Definisce la cross validation con StratifiedKFold (k=10)
 skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
-# Esegue la cross validation calcolando accuracy, precision, recall
 scoring_metrics = ['accuracy', 'precision_macro', 'recall_macro']
+
+# Esegue la cross validation calcolando accuracy, precision, recall
 results = cross_validate(pipeline, X, y, cv=skf, scoring=scoring_metrics, return_estimator=False)
 
 acc_values = results['test_accuracy']
 prec_values = results['test_precision_macro']
 rec_values = results['test_recall_macro']
 
-# Creazione di un array per identificare il numero di fold
 folds = range(1, len(acc_values) + 1)
-
-
 
 # Stampa dei valori per ogni fold
 print("=== Risultati per fold ===")
 for i in range(len(acc_values)):
     print(f"Fold {i+1}: Accuracy={acc_values[i]:.4f}, Precision={prec_values[i]:.4f}, Recall={rec_values[i]:.4f}")
 
-print("\n=== Risultati medi===")
+print("\n=== Risultati medi ===")
 print(f"Media Accuracy: {np.mean(acc_values):.4f}")
 print(f"Media Precision: {np.mean(prec_values):.4f}")
 print(f"Media Recall: {np.mean(rec_values):.4f}")
-
-
 
 # Generazione dei grafici a linee (Accuracy, Precision, Recall)
 plt.figure(figsize=(6, 4))
@@ -91,7 +86,6 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
-
 # Creazione della tabella globale con medie (Accuracy, Precision, Recall)
 global_accuracy = np.mean(acc_values)
 global_precision = np.mean(prec_values)
@@ -111,7 +105,6 @@ tbl_global.set_fontsize(10)
 plt.tight_layout()
 plt.show()
 
-
 # Addestramento finale sul dataset completo
 pipeline.fit(X, y)
 
@@ -119,4 +112,5 @@ pipeline.fit(X, y)
 model_filename = "naive_bayes_pipeline.joblib"
 dump(pipeline, model_filename)
 print(f"\nModello addestrato e salvato in '{model_filename}'.")
+
 
