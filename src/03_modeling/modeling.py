@@ -53,10 +53,10 @@ print("=== Risultati per fold ===")
 for i in range(len(acc_values)):
     print(f"Fold {i+1}: Accuracy={acc_values[i]:.4f}, Precision={prec_values[i]:.4f}, Recall={rec_values[i]:.4f}")
 
-print("\n=== Risultati medi e deviazione standard ===")
-print(f"Media Accuracy: {np.mean(acc_values):.4f}  | Std: {np.std(acc_values):.4f}")
-print(f"Media Precision: {np.mean(prec_values):.4f} | Std: {np.std(prec_values):.4f}")
-print(f"Media Recall: {np.mean(rec_values):.4f}    | Std: {np.std(rec_values):.4f}")
+print("\n=== Risultati medi===")
+print(f"Media Accuracy: {np.mean(acc_values):.4f}")
+print(f"Media Precision: {np.mean(prec_values):.4f}")
+print(f"Media Recall: {np.mean(rec_values):.4f}")
 
 
 
