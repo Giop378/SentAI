@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
 # Carica il modello salvato
-model_filename = "../03_modeling/naive_bayes_pipeline.joblib"
+model_filename = "../03_modeling/logistic_regression_tfidf_pipeline.joblib"
 pipeline = load(model_filename)
 
 # Carica il dataset di test
@@ -52,8 +52,8 @@ cm_list = cm.tolist()
 flatten = [str(item) for row in cm_list for item in row]
 fig_cm, ax_cm = plt.subplots(figsize=(8, 4))
 ax_cm.axis('off')
-columns_cm = ["Fold/Model", "TN", "FP", "FN", "TP"]
-table_data_cm = [["Test Model"] + flatten]
+columns_cm = ["TN", "FP", "FN", "TP"]
+table_data_cm = [flatten]
 tbl_cm = ax_cm.table(cellText=table_data_cm, colLabels=columns_cm, loc='center')
 tbl_cm.auto_set_font_size(False)
 tbl_cm.set_fontsize(8)

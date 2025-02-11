@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 from joblib import load
 
-MODEL_FILENAME = "../03_modeling/naive_bayes_pipeline.joblib"
+MODEL_FILENAME = "../03_modeling/logistic_regression_tfidf_pipeline.joblib"
 try:
     model = load(MODEL_FILENAME)
 except Exception as e:

@@ -608,5 +608,68 @@ for i in range(min(3, X_dense.shape[0])):
         if count > 0:
             print(f"  Token: '{token}', Count: {count}")
 
+#%% md
+# ## Applicazione TF-IDF
+#%%
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Inizializza il vettorizzatore TF-IDF.
+# min_df=5: considera solo parole che appaiono in almeno 5 documenti
+# max_df=0.9: esclude le parole presenti nel 90% o più dei documenti
+tfidf = TfidfVectorizer(min_df=5, max_df=0.9)
+
+# Visualizziamo alcuni esempi di testi puliti (la colonna 'text_final_no_wa')
+print("=== Esempio di documenti originali (prime 5 righe) ===")
+print(dataset['text_final_no_wa'].head(), "\n")
+
+# Applica TfidfVectorizer per trasformare il testo in una matrice sparsa
+X_sparse_tfidf = tfidf.fit_transform(dataset['text_final_no_wa'])
+
+# Stampa la matrice sparsa: tipo e dimensioni
+print("=== Matrice TF-IDF (sparsa) ===")
+print(X_sparse_tfidf)
+print("\nShape della matrice sparsa:", X_sparse_tfidf.shape, "\n")
+
+# Converte la matrice sparsa in una matrice densa per visualizzare i valori TF-IDF
+X_dense_tfidf = X_sparse_tfidf.todense()
+print("=== Matrice TF-IDF (densa) ===")
+print(X_dense_tfidf, "\n")
+
+# Ottiene le feature names (i token che compongono il vocabolario)
+feature_names_tfidf = tfidf.get_feature_names_out()
+print("=== Elenco completo delle feature names ===")
+print(feature_names_tfidf, "\n")
+
+# Stampa il vocabolario come dizionario (mapping token -> indice)
+print("=== Vocabolario (mapping token: indice) ===")
+print(tfidf.vocabulary_, "\n")
+
+# Analisi dettagliata per il primo tweet
+doc_index = 0
+doc_vector_tfidf = X_dense_tfidf[doc_index].tolist()[0]
+print("=== Dettagli per il primo tweet ===")
+print("Testo originale:", dataset['text_final_no_wa'].iloc[doc_index])
+print("Vettore (valori TF-IDF per ciascun token):")
+print(doc_vector_tfidf, "\n")
+
+# Stampa i token effettivamente presenti nel primo tweet e il relativo valore TF-IDF
+print("Token presenti nel primo tweet:")
+for token, idx in tfidf.vocabulary_.items():
+    score = doc_vector_tfidf[idx]
+    if score > 0:
+        print(f"Token: '{token}', TF-IDF: {score}")
+
+# Seleziona e stampa i dettagli per i primi 3 tweet per una visione più ampia
+print("\n=== Dettagli per i primi 3 tweet ===")
+for i in range(min(3, X_dense_tfidf.shape[0])):
+    doc_vector_tfidf = X_dense_tfidf[i].tolist()[0]
+    print(f"\nTweet {i+1}:")
+    print("Testo originale:", dataset['text_final_no_wa'].iloc[i])
+    print("Token presenti e TF-IDF:")
+    for token, idx in tfidf.vocabulary_.items():
+        score = doc_vector_tfidf[idx]
+        if score > 0:
+            print(f"  Token: '{token}', TF-IDF: {score}")
+
 #%%
 dataset.shape
